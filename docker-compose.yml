@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. Cấu hình dịch vụ Database
+  db:
+    image: postgres:16-alpine
+    container_name: todo_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todoapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  # 2. Cấu hình dịch vụ App Golang của bạn
+  app:
+    build: .
+    container_name: todo_app
+    ports:
+      - "3000:3000"
+    environment:
+      APP_ENV: production
+      APP_PORT: 3000
+      DB_HOST: db       # <<< QUAN TRỌNG: Trỏ trực tiếp vào tên service "db" ở phía trên
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: todoapp
+      DB_SSLMODE: disable
+      JWT_SECRET: super-secret-key-của-huy
+      JWT_EXPIRES_IN: 24
+      JWT_REFRESH_EXPIRES_IN: 168
+    depends_on:
+      - db             # Chỉ chạy app sau khi container db đã khởi động xong
+    restart: always
+
+# Khai báo volume để lưu trữ dữ liệu Postgres không bị mất khi tắt container
+volumes:
+  postgres_data:

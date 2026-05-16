@@ -1,5 +1,5 @@
 # === GIAI ĐOẠN 1: BUILD BINARY ===
-FROM golang:1.23-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 # Cài đặt git và các công cụ cần thiết (nếu có)
 RUN apk add --no-cache git
